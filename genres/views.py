@@ -1,7 +1,34 @@
+import json
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from .models import Genre
 
-def genre_view(request):
-    genres = Genre.objects.all()
-    data = [{'id': genre.id, 'name': genre.name} for genre in genres]
-    return JsonResponse(data, safe=False)
+@csrf_exempt
+def genre_create_list_view(request):
+    if request.method == 'GET':
+        genres = Genre.objects.all()
+        data = [{'id': genre.id, 'name': genre.name} for genre in genres]
+        return JsonResponse(data, safe=False)
+    elif request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        new_genre = Genre(name=data['name'])
+        new_genre.save()
+        return JsonResponse(
+            {'id': new_genre.id, 'name': new_genre.name},
+            status=201,
+        )
+
+@csrf_exempt 
+def genre_detail_update_view(request, id):
+    genre = get_object_or_404(Genre, id=id)
+    if request.method == "PUT":
+        data = json.loads(request.body.decode('utf-8'))
+        if data['name']:
+            genre.name = data['name']
+            genre.save()
+        else:
+            return JsonResponse({'error': 'not a valid parameter'})
+    elif request.method == "DELETE":
+        pass
+    return JsonResponse({'id': genre.id, 'name': genre.name})

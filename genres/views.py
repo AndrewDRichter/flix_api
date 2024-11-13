@@ -22,8 +22,11 @@ def genre_create_list_view(request):
 @csrf_exempt 
 def genre_detail_update_view(request, id):
     genre = get_object_or_404(Genre, id=id)
-    data = {'id': genre.id, 'name': genre.name}
-    if request.method == "PUT":
+
+    if request.method == 'GET':
+        data = {'id': genre.id, 'name': genre.name}
+
+    elif request.method == "PUT":
         payload = json.loads(request.body.decode('utf-8'))
         if payload['name']:
             genre.name = data['name']
@@ -31,6 +34,9 @@ def genre_detail_update_view(request, id):
             data = {'id': genre.id, 'name': genre.name}
         else:
             data = {'error': 'not a valid parameter'}
+
     elif request.method == "DELETE":
-        pass
+        genre.delete()
+        return JsonResponse({"message": "genre deleted successful"}, status=204,)
+
     return JsonResponse(data)

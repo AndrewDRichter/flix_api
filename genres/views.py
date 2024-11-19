@@ -1,12 +1,12 @@
-import json
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from .models import Genre
+# import json
+# from django.http import JsonResponse
+# from django.shortcuts import get_object_or_404
+# from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
+from .models import Genre
 from .serializers import GenreSerializer
 
-class GenreCreateListView(generics.ListCreateAPIView):
+class GenreListCreateView(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
@@ -25,24 +25,30 @@ class GenreCreateListView(generics.ListCreateAPIView):
 #             status=201,
 #         )
 
-@csrf_exempt 
-def genre_detail_update_view(request, id):
-    genre = get_object_or_404(Genre, id=id)
 
-    if request.method == 'GET':
-        data = {'id': genre.id, 'name': genre.name}
+class GenreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    lookup_field = 'id'
 
-    elif request.method == "PUT":
-        payload = json.loads(request.body.decode('utf-8'))
-        if payload['name']:
-            genre.name = data['name']
-            genre.save()
-            data = {'id': genre.id, 'name': genre.name}
-        else:
-            data = {'error': 'not a valid parameter'}
+# @csrf_exempt 
+# def genre_detail_update_view(request, id):
+#     genre = get_object_or_404(Genre, id=id)
 
-    elif request.method == "DELETE":
-        genre.delete()
-        return JsonResponse({"message": "genre deleted successful"}, status=204,)
+#     if request.method == 'GET':
+#         data = {'id': genre.id, 'name': genre.name}
 
-    return JsonResponse(data)
+#     elif request.method == "PUT":
+#         payload = json.loads(request.body.decode('utf-8'))
+#         if payload['name']:
+#             genre.name = data['name']
+#             genre.save()
+#             data = {'id': genre.id, 'name': genre.name}
+#         else:
+#             data = {'error': 'not a valid parameter'}
+
+#     elif request.method == "DELETE":
+#         genre.delete()
+#         return JsonResponse({"message": "genre deleted successful"}, status=204,)
+
+#     return JsonResponse(data)

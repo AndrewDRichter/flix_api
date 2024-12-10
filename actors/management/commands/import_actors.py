@@ -1,6 +1,6 @@
 import csv
 from datetime import datetime
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from actors.models import Actor
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file_name = options["file_name"]
-        
+
         with open(file_name, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -27,6 +27,6 @@ class Command(BaseCommand):
                     name=name,
                     birthday=birthday,
                     nationality=nationality,
-                )                
+                )
 
         self.stdout.write(self.style.SUCCESS('ACTORS IMPORTED SUCCESSFULLY!'))
